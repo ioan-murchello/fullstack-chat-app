@@ -24,7 +24,7 @@ socketIo.on("connection", (socket) => {
 
   // * emit() is useed to send events to all the connected clients
   socketIo.emit("getOnlineUsers", Object.keys(userSocketMap));
-  socketIo.on("disconnected", (socket) => { 
+  socketIo.on("disconnect", (socket) => { 
     delete userSocketMap[userId];
     socketIo.emit("getOnlineUsers", Object.keys(userSocketMap[userId]));
   });
