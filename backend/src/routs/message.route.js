@@ -7,10 +7,6 @@ const router = express.Router();
 router.get('/users', protectedRoute, getUsersForSidebar)
 router.get("/:id", protectedRoute, getMessages);
 router.post("/send/:id", protectedRoute,  sendMessage);
-
-
-router.delete("/:id", (req, res) => {
-  // Handle deleting a message
-});
+ 
 
 export default router;

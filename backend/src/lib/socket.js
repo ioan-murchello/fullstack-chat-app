@@ -17,17 +17,14 @@ export function getReciverSocket(userId){
   return userSocketMap[userId]
 }
 
-socketIo.on("connection", (socket) => {
-  console.log("a user connected", socket.id);
-  const userId = socket.handshake.query.userId;
-  console.log(userId, 'userId');
+socketIo.on("connection", (socket) => { 
+  const userId = socket.handshake.query.userId; 
   
   if (userId) userSocketMap[userId] = socket.id;
 
   // * emit() is useed to send events to all the connected clients
   socketIo.emit("getOnlineUsers", Object.keys(userSocketMap));
-  socketIo.on("disconnected", (socket) => {
-    console.log("a user disconnected", socket.id);
+  socketIo.on("disconnected", (socket) => { 
     delete userSocketMap[userId];
     socketIo.emit("getOnlineUsers", Object.keys(userSocketMap[userId]));
   });
