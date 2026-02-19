@@ -1,12 +1,18 @@
-import { deleteMessage, getMessages, getUsersForSidebar, sendMessage } from '../controllers/messages.controller.js';
-import express from 'express';
-import { protectedRoute } from '../middleware/auth.protectedRoute.js';
+import {
+  deleteMessage,
+  getMessages,
+  getUsersForSidebar,
+  sendMessage,
+} from "../controllers/messages.controller.js";
+import express from "express";
+import { protectedRoute } from "../middleware/auth.protectedRoute.js";
+import { chatLimiter } from "../lib/utils.js";
 
 const router = express.Router();
 
-router.get('/users', protectedRoute, getUsersForSidebar)
+router.get("/users", protectedRoute, getUsersForSidebar);
 router.get("/:id", protectedRoute, getMessages);
-router.post("/send/:id", protectedRoute,  sendMessage);
-router.delete("/delete/:id", protectedRoute, deleteMessage)
+router.post("/send/:id", protectedRoute, chatLimiter, sendMessage);
+router.delete("/delete/:id", protectedRoute, deleteMessage);
 
 export default router;

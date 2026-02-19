@@ -8,6 +8,7 @@ import {
   Login,
   SettingsPage,
   Profile,
+  NotFound,
 } from "./pages/pages.js";
 import { Toaster } from "react-hot-toast";
 import useThemeStore from "./store/useThemeStore.js";
@@ -49,6 +50,7 @@ function App() {
           element={user ? <Profile /> : <Navigate to="/login" />}
         />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   );

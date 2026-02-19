@@ -45,6 +45,9 @@ const useChatStore = create((set, get) => ({
       );
       set({ messages: [...messages, res.data] });
     } catch (error) {
+      if (error.response?.status === 429) {
+        toast.error("Slow down! You're sending messages too fast.");
+      }
       toast.error(error.response?.data?.message || "Failed to send message");
     }
   },

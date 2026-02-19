@@ -17,13 +17,16 @@ const Login = () => {
   });
 
   const validateForm = () => {
-    if (!initialValues.email.trim()) return toast.error("Email is required");
+    if (!initialValues.email.trim())
+      return toast.error("Email is required", { id: "emailError" });
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(initialValues.email.trim()))
-      return toast.error("Email is invalid");
+      return toast.error("Email is invalid", { id: "emailInvalidError" });
     if (!initialValues.password.trim())
-      return toast.error("Password is required");
+      return toast.error("Password is required", { id: "passwordError" });
     if (initialValues.password.length < 6)
-      return toast.error("Password must be at least 6 characters");
+      return toast.error("Password must be at least 6 characters", {
+        id: "passwordLengthError",
+      });
     return true;
   };
 
