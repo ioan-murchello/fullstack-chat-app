@@ -61,8 +61,6 @@ export const sendMessage = async (req, res) => {
       reciver,
     });
 
-    await newMessage.save();
-
     const reciverSocketId = getReciverSocket(reciver);
     if (reciverSocketId) {
       socketIo.to(reciverSocketId).emit("newMessage", newMessage);
@@ -94,10 +92,10 @@ export const deleteMessage = async (req, res) => {
     }
 
     message.text = "message was deleted";
-    message.image = null; 
+    message.image = null;
     message.isDeleted = true;
     await message.save();
- 
+
     const receiverSocketId = getReciverSocket(message.reciver);
     if (receiverSocketId) {
       socketIo.to(receiverSocketId).emit("messageUpdate", message);

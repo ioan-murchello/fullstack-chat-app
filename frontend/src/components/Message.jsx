@@ -49,7 +49,7 @@ const Message = ({ message, deleteMessage, user }) => {
         }`}
       >
         {message.text && <p>{message.text}</p>}
-        {message.imageUrl && (
+        {message.image && (
           <img
             src={message.image}
             alt="Attachment"
