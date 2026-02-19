@@ -75,13 +75,12 @@ export const signup = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
-  console.log('logout in controller')
   try {
     res.cookie("jwt", "", {
       maxAge: 0,
       httpOnly: true,
       secure: process.env.NODE_ENV !== "development",
-      sameSite: "strict",
+      sameSite: "none",
       path: "/",
     });
     res.status(200).json({ message: "Logged out successfully" });
