@@ -20,13 +20,37 @@ export function getReciverSocket(userId){
 socketIo.on("connection", (socket) => { 
   const userId = socket.handshake.query.userId; 
   
-  if (userId) userSocketMap[userId] = socket.id;
+  // 1. Assign the userId to the socket object so you can use it later
+  if (userId) {
+    socket.userId = userId; 
+    userSocketMap[userId] = socket.id;
+  }
 
-  // * emit() is useed to send events to all the connected clients
+  // 2. Relay typing events (Now socket.userId will actually have a value)
+  socket.on("typing", ({ receiverId }) => {
+    const receiverSocketId = getReciverSocket(receiverId);
+    if (receiverSocketId) {
+      socket.to(receiverSocketId).emit("userTyping", { senderId: socket.userId });
+    }
+  });
+
+  socket.on("stopTyping", ({ receiverId }) => {
+    const receiverSocketId = getReciverSocket(receiverId);
+    if (receiverSocketId) {
+      socket.to(receiverSocketId).emit("userStoppedTyping", { senderId: socket.userId });
+    }
+  });
+
+  // Send the list of online users to everyone
   socketIo.emit("getOnlineUsers", Object.keys(userSocketMap));
-  socketIo.on("disconnect", (socket) => { 
-    delete userSocketMap[userId];
-    socketIo.emit("getOnlineUsers", Object.keys(userSocketMap[userId]));
+
+  // 3. FIX: Use 'socket.on' (individual), not 'socketIo.on' (global)
+  socket.on("disconnect", () => { 
+    console.log("User disconnected:", socket.userId);
+    if (socket.userId) {
+      delete userSocketMap[socket.userId];
+    }
+    socketIo.emit("getOnlineUsers", Object.keys(userSocketMap));
   });
 });
 

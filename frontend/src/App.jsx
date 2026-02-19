@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import useAuthStore from "./store/useAuthStore.js";
-import { Navigate } from "react-router-dom"; 
+import { Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import {
   HomePage,
@@ -8,14 +8,14 @@ import {
   Login,
   SettingsPage,
   Profile,
-} from "./pages/pages.js"; 
+} from "./pages/pages.js";
 import { Toaster } from "react-hot-toast";
 import useThemeStore from "./store/useThemeStore.js";
 import { useEffect } from "react";
 
 function App() {
-  const { user, checkAuth, isChecking, onlineUsers } = useAuthStore();
-  const { theme } = useThemeStore(); 
+  const { user, checkAuth, isChecking } = useAuthStore();
+  const { theme } = useThemeStore();
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);

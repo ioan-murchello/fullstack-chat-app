@@ -75,8 +75,15 @@ export const signup = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
+  console.log('logout in controller')
   try {
-    res.cookie("jwt", "", { maxAge: 0 });
+    res.cookie("jwt", "", {
+      maxAge: 0,
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      sameSite: "strict",
+      path: "/",
+    });
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
     res
@@ -95,11 +102,11 @@ export const updateProfile = async (req, res) => {
       return res.status(400).json({ message: "Avatar is required" });
     }
 
-    const uploadResponse = await cloudinary.uploader.upload(avatar); 
+    const uploadResponse = await cloudinary.uploader.upload(avatar);
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { avatar: uploadResponse.secure_url },
-      { new: true }
+      { new: true },
     );
     res.status(200).json(updatedUser);
   } catch (error) {

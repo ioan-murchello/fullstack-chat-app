@@ -33,7 +33,9 @@ const Sidebar = () => {
     );
   }
   return (
-    <aside className="w-64 border-r border-base-300 bg-base-200 p-4 hidden md:flex flex-col">
+    <aside className={`w-full h-full border-r border-base-300 bg-base-200 p-4 flex absolute top-0 left-0
+    ${selectedUser ? "-translate-x-[120%]" : "translate-x-0"}
+    sm:w-64 z-10 sm:translate-x-0 sm:static flex-col`}>
       <div className="flex flex-col items-start gap-2 py-5 mb-4 border-b border-base-600">
         <div className="flex items-center gap-2 mb-4">
           <IoPeople className="size-6 text-primary" />

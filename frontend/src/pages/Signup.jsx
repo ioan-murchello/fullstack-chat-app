@@ -35,11 +35,10 @@ const Signup = () => {
     if (!valid) return;
     signup(initialValues);
   };
-
   return (
-    <div className="min-h-screen grid lg:grid-cols-2">
+    <div className="min-h-screen container mx-auto grid lg:grid-cols-2">
       {/* left side */}
-      <div className="flex flex-col justify-center items-center p-6 sm:p-12 border">
+      <div className="flex flex-col justify-center items-center p-6 sm:p-12">
         <div className="w-full flex flex-col gap-4 max-w-md">
           <ImUserTie className="text-6xl text-gray-700 mx-auto" />
           <h1 className="text-2xl text-center">Create Account</h1>
@@ -93,7 +92,7 @@ const Signup = () => {
             </fieldset>
             <button
               onClick={() => setShowPassword(!showPassword)}
-              className="btn btn-soft"
+              className="btn btn-soft self-end my-1"
             >
               {showPassword ? <GoEyeClosed /> : <GoEye />}
             </button>

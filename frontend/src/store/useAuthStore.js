@@ -15,6 +15,7 @@ const useAuthStore = create((set, get) => ({
   isUpdatingProfile: true,
   onlineUsers: [],
   socket: null,
+
   checkAuth: async () => {
     try {
       const res = await axiosInstance.get("/auth/check");
@@ -32,7 +33,6 @@ const useAuthStore = create((set, get) => ({
     set({ isSigningUp: true });
     try {
       const res = await axiosInstance.post("/auth/signup", userData);
-      console.log(res.data, "signup response");
       set({ user: res.data });
       toast.success("Signup successful!");
       get().connectSocket();
@@ -59,11 +59,21 @@ const useAuthStore = create((set, get) => ({
     }
   },
 
-  logout: () => {
-    set({ user: null, isChecking: false });
-    toast.success("Logged out");
+  logout: async () => { 
+  try {
+
+    await axiosInstance.post("/auth/logout");
+
+    set({ user: null });
+    
     get().disconnectSocket();
-  },
+    
+    toast.success("Logged out successfully");
+  } catch (error) {
+    console.log("Error in logout:", error);
+    toast.error(error.response?.data?.message || "Logout failed");
+  }
+},
 
   updateUserProfile: async (avatar) => {
     set({ isUpdatingProfile: true });

@@ -9,6 +9,7 @@ const useChatStore = create((set, get) => ({
   selectedUser: null,
   isUserLoading: false,
   isMessagesLoading: false,
+  isTyping: false,
 
   setSelectedUser: (user) => set({ selectedUser: user }),
 
@@ -35,40 +36,85 @@ const useChatStore = create((set, get) => ({
     }
   },
   sendMessage: async (messageData) => {
-    const { selectedUser, messages } = get(); 
-    
+    const { selectedUser, messages } = get();
+
     try {
       const res = await axiosInstance.post(
         `/messages/send/${selectedUser._id}`,
-        messageData
+        messageData,
       );
       set({ messages: [...messages, res.data] });
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to send message");
     }
   },
-  subscribeToMessages: () => {
-    const {selectedUser} = get() 
-    if(!selectedUser._id) return
 
-    const socket = useAuthStore.getState().socket
-    socket.on('newMessage', (newMessage) => {  
-      console.log(newMessage, 'message');
-      
-      if(newMessage.sender !== selectedUser._id) return
-      const msg = get().messages 
+  deleteMessage: async (msgId) => {
+    try {
+      const res = await axiosInstance.delete(`/messages/delete/${msgId}`);
+      const updatedMessage = res.data;
+
       set({
-        messages: [...msg, newMessage]
-      })
-    })
+        messages: get().messages.map((msg) =>
+          msg._id === msgId ? updatedMessage : msg,
+        ),
+      });
+
+      toast.success("Message removed");
+    } catch (error) {
+      console.log(error);
+    }
   },
-  
+
+  subscribeToMessages: () => {
+    const { selectedUser } = get();
+    if (!selectedUser._id) return;
+
+    const socket = useAuthStore.getState().socket;
+    (socket.on("newMessage", (newMessage) => {
+      if (newMessage.sender !== selectedUser._id) return;
+      const msg = get().messages;
+      set({
+        messages: [...msg, newMessage],
+      });
+    }),
+      socket.on("messageUpdate", (updatedMessage) => {
+        set({
+          messages: get().messages.map((msg) =>
+            msg._id === updatedMessage._id ? updatedMessage : msg,
+          ),
+        });
+      }),
+      socket.on("userTyping", ({ senderId }) => {
+        if (senderId === get().selectedUser?._id) {
+          set({ isTyping: true });
+        }
+      }),
+      socket.on("userStoppedTyping", ({ senderId }) => {
+        if (senderId === get().selectedUser?._id) {
+          set({ isTyping: false });
+        }
+      }));
+  },
+
   unsubscribeMessages: () => {
-    const socket = useAuthStore.getState().socket 
-    socket.off('newMessages')
-  }
+    const socket = useAuthStore.getState().socket;
+    socket.off("newMessage");
+    socket.off("userTyping");
+    socket.off("userStoppedTyping");
+  },
 
+  sendTypingStatus: (isTyping) => {
+    const { selectedUser } = get();
+    const socket = useAuthStore.getState().socket;
+    if (!selectedUser || !socket) return;
 
+    if (isTyping) {
+      socket.emit("typing", { receiverId: selectedUser._id });
+    } else {
+      socket.emit("stopTyping", { receiverId: selectedUser._id });
+    }
+  },
 }));
 
 export default useChatStore;

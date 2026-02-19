@@ -8,7 +8,7 @@ const ChatMessageInput = () => {
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef(null);
-  const { sendMessage } = useChatStore();
+  const { sendMessage, sendTypingStatus } = useChatStore();
 
   const handlePreviewImage = (e) => {
     const file = e.target.files[0];
@@ -20,22 +20,55 @@ const ChatMessageInput = () => {
     reader.readAsDataURL(file);
   };
 
+  // Add these REFs at the top of your component
+  const typingTimeoutRef = useRef(null);
+  const isCurrentlyTyping = useRef(false);
+
+  const handleInputText = (e) => {
+    const value = e.target.value;
+    setText(value);
+
+    // 1. If we haven't told the server we're typing yet, do it now
+    if (!isCurrentlyTyping.current && value.length > 0) {
+      isCurrentlyTyping.current = true;
+      sendTypingStatus(true);
+    }
+
+    // 2. ALWAYS clear the existing "Stop" timer every time a key is pressed
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+
+    // 3. Start a fresh 2.5-second timer
+    // This timer ONLY fires if you STOP typing for 2.5 seconds
+    typingTimeoutRef.current = setTimeout(() => {
+      sendTypingStatus(false);
+      isCurrentlyTyping.current = false;
+    }, 2500);
+
+    // 4. If the user deletes everything, stop immediately
+    if (value.length === 0) {
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+      sendTypingStatus(false);
+      isCurrentlyTyping.current = false;
+    }
+  };
+
   const deleteImagePreview = () => {
     setImagePreview(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if(!text.trim() && !imagePreview) return;
+    if (!text.trim() && !imagePreview) return;
     try {
-      await sendMessage({text, image: imagePreview });
-      setText('');
+      await sendMessage({ text, image: imagePreview });
+      setText("");
+      sendTypingStatus(false);
       setImagePreview(null);
-      if(fileInputRef.current) {
-        fileInputRef.current.value = '';
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
       }
     } catch (error) {
       console.error("Error sending message:", error);
@@ -71,7 +104,7 @@ const ChatMessageInput = () => {
             className="w-full input input-bordered rounded-lg input-sm sm:input-md"
             placeholder="Type a message..."
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(e) => handleInputText(e)}
           />
           <input
             type="file"
@@ -83,7 +116,7 @@ const ChatMessageInput = () => {
 
           <button
             type="button"
-            className={`hidden sm:flex btn btn-circle
+            className={` sm:flex btn btn-circle
                      ${imagePreview ? "text-emerald-500" : "text-zinc-400"}`}
             onClick={() => fileInputRef.current?.click()}
           >

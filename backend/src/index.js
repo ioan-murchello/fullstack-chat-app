@@ -6,7 +6,8 @@ import { connectDB } from "./lib/db.js";
 import cookieParser from "cookie-parser";
 import cors from 'cors';
 import {app, server} from './lib/socket.js'
-import path from 'path'
+import path from 'path' 
+
 dotenv.config(); // * access environment variables
 
 const PORT = process.env.PORT || 5001;
@@ -16,17 +17,10 @@ app.use(express.json({ limit: "10mb" }));  // or "20mb" depending on your needs 
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use(cookieParser());
 
-// app.use(cors({
-//   origin: "http://localhost:5173",
-//   credentials: true, // * Allow credentials (cookies) to be sent
-// }));
-
 app.use(
   cors({
     origin: "http://localhost:5173", // frontend URL
-    credentials: true,               // allow cookies & auth headers
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // allow all HTTP methods
-    allowedHeaders: ["Content-Type", "Authorization"],    // allow custom headers
+    credentials: true,               // allow cookies & auth headers 
   })
 );
 connectDB();

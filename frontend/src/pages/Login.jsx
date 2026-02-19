@@ -10,7 +10,7 @@ import { toast } from "react-hot-toast";
 const Login = () => {
   const { login, isLoggingIn } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
-  
+
   const [initialValues, setInitialValues] = useState({
     email: "",
     password: "",
@@ -35,7 +35,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2">
+    <div className="min-h-screen container mx-auto grid lg:grid-cols-2">
       {/* left side */}
       <div className="hidden lg:flex items-center justify-center bg-base-200 p-12">
         <AuthImagePattern
@@ -45,7 +45,7 @@ const Login = () => {
       </div>
 
       {/* right side */}
-      <div className="flex flex-col justify-center items-center p-6 sm:p-12 border">
+      <div className="flex flex-col justify-center items-center p-6 sm:p-12">
         <div className="w-full flex flex-col gap-4 max-w-md">
           <FaUserAstronaut className="text-6xl text-gray-700 mx-auto" />
           <h1 className="text-2xl text-center">Log In</h1>
@@ -70,7 +70,7 @@ const Login = () => {
             />
           </fieldset>
           <div className="flex gap-4 justify-center items-center w-full">
-            <fieldset className="fieldset w-full">
+            <fieldset className="w-full">
               <legend className="fieldset-legend text-xl">Password</legend>
               <input
                 type={showPassword ? "text" : "password"}
@@ -86,14 +86,15 @@ const Login = () => {
               />
             </fieldset>
             <button
+              type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="btn btn-soft"
+              className="btn btn-soft self-end"
             >
               {showPassword ? <GoEyeClosed /> : <GoEye />}
             </button>
           </div>
           <button disabled={isLoggingIn} className="btn btn-soft">
-            {isLoggingIn ? 'Logging in ...' : 'Login'}
+            {isLoggingIn ? "Logging in ..." : "Login"}
           </button>
         </form>
         <p className="text-center text-gray-500 mt-4">

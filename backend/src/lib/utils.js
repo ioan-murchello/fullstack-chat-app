@@ -9,6 +9,7 @@ export const generateToken = (userId, res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV !== "development", // * only send cookie over HTTPS in production,
     sameSite: "strict",
+    path: '/'
   });
   return token;
 };

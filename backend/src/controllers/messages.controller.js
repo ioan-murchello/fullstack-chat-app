@@ -16,8 +16,7 @@ export const getUsersForSidebar = async (req, res) => {
   }
 };
 
-export const getMessages = async (req, res) => { 
-  
+export const getMessages = async (req, res) => {
   const { id: userChatId } = req.params;
   const myId = req.user._id;
 
@@ -33,17 +32,17 @@ export const getMessages = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch messages" });
   }
 };
- 
+
 export const sendMessage = async (req, res) => {
   try {
     const { text, image } = req.body;
-    const sender = req.user?._id;   
+    const sender = req.user?._id;
     const reciver = req.params.id;
- 
+
     if (!sender || !reciver) {
       return res.status(400).json({ message: "Missing sender or receiver" });
     }
- 
+
     let imageUrl;
     if (image) {
       try {
@@ -62,11 +61,11 @@ export const sendMessage = async (req, res) => {
       reciver,
     });
 
-    await newMessage.save()
+    await newMessage.save();
 
-    const reciverSocketId = getReciverSocket(reciver)
-    if(reciverSocketId){
-      socketIo.to(reciverSocketId).emit('newMessage', newMessage)
+    const reciverSocketId = getReciverSocket(reciver);
+    if (reciverSocketId) {
+      socketIo.to(reciverSocketId).emit("newMessage", newMessage);
     }
 
     res.status(201).json(newMessage);
@@ -76,5 +75,37 @@ export const sendMessage = async (req, res) => {
       message: "Failed to send message",
       error: error.message,
     });
+  }
+};
+
+export const deleteMessage = async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user._id;
+  try {
+    const message = await Message.findById(id);
+    if (!message) {
+      return res.status(404).json({ message: "Message not found" });
+    }
+
+    if (message.sender.toString() !== userId.toString()) {
+      return res.status(401).json({
+        message: "Unauthorized: You can only delete your own messages",
+      });
+    }
+
+    message.text = "message was deleted";
+    message.image = null; 
+    message.isDeleted = true;
+    await message.save();
+ 
+    const receiverSocketId = getReciverSocket(message.reciver);
+    if (receiverSocketId) {
+      socketIo.to(receiverSocketId).emit("messageUpdate", message);
+    }
+
+    return res.status(200).json(message);
+  } catch (error) {
+    console.log("Error in deleteMessage controller:", error.message);
+    res.status(500).json({ message: "Internal server error" });
   }
 };

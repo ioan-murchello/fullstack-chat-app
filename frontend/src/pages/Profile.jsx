@@ -1,31 +1,24 @@
 import { useState } from "react";
 import useAuthStore from "../store/useAuthStore";
-import { FaUserCircle } from "react-icons/fa"; 
+import { FaUserCircle } from "react-icons/fa";
 import { BiCamera } from "react-icons/bi";
-import { BiMailSend } from "react-icons/bi"; 
+import { BiMailSend } from "react-icons/bi";
 
 const Profile = () => {
   const [selectedImg, setSelectedImg] = useState(null);
   const { user, updateUserProfile, isUpdatingProfile } = useAuthStore();
- 
-  
-   const handleImageUpload = async (e) => { 
+
+  const handleImageUpload = async (e) => {
     const file = e.target.files[0];
-    console.log("file", file);
-
     if (!file) return;
-
     const reader = new FileReader();
-
     reader.onload = async () => {
-      const base64Image = reader.result; // ✅ this is your base64 string 
-
-      setSelectedImg(base64Image);       // preview in UI
-      await updateUserProfile({avatar: base64Image}); // send to backend
+      const base64Image = reader.result;
+      setSelectedImg(base64Image);
+      await updateUserProfile({ avatar: base64Image });
     };
 
-    reader.readAsDataURL(file)
- 
+    reader.readAsDataURL(file);
   };
   return (
     <div className="h-screen pt-20">
@@ -41,7 +34,7 @@ const Profile = () => {
           <div className="flex flex-col items-center gap-4">
             <div className="relative">
               <img
-                src={user?.avatar ||selectedImg || "/avatar.png"}
+                src={user?.avatar || selectedImg || "/avatar.png"}
                 alt="Profile"
                 className="size-32 rounded-full object-cover border-4 "
               />
@@ -53,7 +46,9 @@ const Profile = () => {
                   p-2 rounded-full cursor-pointer 
                   transition-all duration-200
                   ${
-                    !isUpdatingProfile ? "animate-pulse pointer-events-none" : ""
+                    isUpdatingProfile
+                      ? "animate-pulse pointer-events-none"
+                      : ""
                   }
                 `}
               >
@@ -64,12 +59,12 @@ const Profile = () => {
                   className="hidden"
                   accept="image/*"
                   onChange={handleImageUpload}
-                  // disabled={isUpdatingProfile}
+                  disabled={isUpdatingProfile}
                 />
               </label>
             </div>
             <p className="text-sm text-zinc-400">
-              {!isUpdatingProfile
+              {isUpdatingProfile
                 ? "Uploading..."
                 : "Click the camera icon to update your photo"}
             </p>
