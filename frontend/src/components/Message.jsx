@@ -49,6 +49,13 @@ const Message = ({ message, deleteMessage, user }) => {
         }`}
       >
         {message.text && <p>{message.text}</p>}
+        {message.imageUrl && (
+          <img
+            src={message.image}
+            alt="Attachment"
+            className="sm:max-w-[200px] rounded-md mb-2"
+          />
+        )}
       </div>
 
       {showPopup && !message.isDeleted && message.sender === user._id && (
