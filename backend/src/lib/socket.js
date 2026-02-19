@@ -47,7 +47,6 @@ socketIo.on("connection", (socket) => {
   // Send the list of online users to everyone
   socketIo.emit("getOnlineUsers", Object.keys(userSocketMap));
 
-  // 3. FIX: Use 'socket.on' (individual), not 'socketIo.on' (global)
   socket.on("disconnect", () => { 
     console.log("User disconnected:", socket.userId);
     if (socket.userId) {
