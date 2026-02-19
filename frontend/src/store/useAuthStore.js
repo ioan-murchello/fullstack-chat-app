@@ -15,7 +15,7 @@ const useAuthStore = create((set, get) => ({
   isSigningUp: false,
   isLoggingIn: false,
   isChecking: true,
-  isUpdatingProfile: true,
+  isUpdatingProfile: false,
   onlineUsers: [],
   socket: null,
 
