@@ -33,9 +33,11 @@ const Sidebar = () => {
     );
   }
   return (
-    <aside className={`w-full h-full border-r border-base-300 bg-base-200 p-4 flex absolute top-0 left-0
+    <aside
+      className={`w-full h-full border-r border-base-300 bg-base-200 p-4 flex absolute top-0 left-0
     ${selectedUser ? "-translate-x-[120%]" : "translate-x-0"}
-    sm:w-64 z-10 sm:translate-x-0 sm:static flex-col`}>
+    sm:w-64 z-10 sm:translate-x-0 sm:static flex-col`}
+    >
       <div className="flex flex-col items-start gap-2 py-5 mb-4 border-b border-base-600">
         <div className="flex items-center gap-2 mb-4">
           <IoPeople className="size-6 text-primary" />
@@ -52,7 +54,7 @@ const Sidebar = () => {
             <span className="text-sm">Show online only</span>
           </label>
           <span className="text-xs text-zinc-500">
-            ({onlineUsers.length - 1} online)
+            ({onlineUsers.length > 0 ? onlineUsers.length - 1 : 0} online)
           </span>
         </div>
       </div>
